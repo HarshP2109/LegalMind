@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.animate-scroll {
+    animation: scroll 8s linear infinite; /* Adjust duration as needed */
+}
+
+
+
+@keyframes right-slide-in {
+    0% {
+        transform: translateX(100%); /* Start off-screen to the right */
+        opacity: 0; /* Start transparent */
+    }
+    100% {
+        transform: translateX(0); /* End at original position */
+        opacity: 1; /* Fully opaque */
+    }
+}
+
+@keyframes left-slide-in{
+    0% {
+        transform: translateX(-100%); /* Start off-screen to the right */
+        opacity: 0; /* Start transparent */
+    }
+    100% {
+        transform: translateX(0); /* End at original position */
+        opacity: 1; /* Fully opaque */
+    }
+}
+@keyframes top-slide-in{
+    0% {
+        transform: translateY(-100%); /* Start off-screen to the right */
+        opacity: 0; /* Start transparent */
+    }
+    100% {
+        transform: translateY(0); /* End at original position */
+        opacity: 1; /* Fully opaque */
+    }
+}
+
+@keyframes z-slide-in {
+    0% {
+      transform: scale(0) translateZ(-200px); /* Starts small and from the back */
+      opacity: 0; /* Start transparent */
+    }
+    100% {
+      transform: scale(1) translateZ(0); /* Grows to its original size and comes forward */
+      opacity: 1; /* Fully opaque */
+    }
+  }
+  
+
+
+.animate-z-slide-in {
+    animation: z-slide-in 0.5s ease forwards; /* Adjust duration and timing function as needed */
+}
+.animate-top-slide-in {
+    animation: top-slide-in 1s ease forwards; /* Adjust duration and timing function as needed */
+}
+
+.animate-left-slide-in {
+    animation: left-slide-in 1s ease forwards; /* Adjust duration and timing function as needed */
+}
+
+.animate-right-slide-in {
+    animation: right-slide-in 1s ease forwards; /* Adjust duration and timing function as needed */
+}
