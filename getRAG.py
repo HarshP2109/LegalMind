@@ -9,7 +9,8 @@ import os
 
 load_dotenv()
 
-
+def removeBold(string):
+  return string.replace("**", "").replace("###", "").replace("##", "")
 
 async def get_conversational_chain():
     # Define a prompt template for asking questions based on a given context
@@ -57,7 +58,7 @@ async def user_input(user_question):
     # Print the response to the console
     print(response["output_text"])
 
-    return response["output_text"]
+    return removeBold(response["output_text"])
 
     # Display the response in a Streamlit app (assuming 'st' is a Streamlit module)
     # st.write("Reply: ", response["output_text"])

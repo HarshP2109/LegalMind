@@ -1,4 +1,6 @@
 from getRAG import user_input
+from getSummarize import summarize
+from situationRAG import situation_input
 from getEmbedd import generateEmbedding
 import streamlit as st
 from PyPDF2 import PdfReader
@@ -35,6 +37,10 @@ async def createEmbedding(file_text):
 # Initialize session state for API key and messages
 # if 'file' not in st.session_state:
 #     st.session_state.file = None
+if 'situation' not in st.session_state:
+    st.session_state.situation = ""
+if 'SitRag' not in st.session_state:
+    st.session_state.SitRag = []
 if 'file_text' not in st.session_state:
     st.session_state.file_text = ""
 if 'db_path' not in st.session_state:
@@ -86,29 +92,78 @@ def chat_interface():
         loading_message_placeholder.empty()
         st.session_state.Rag.append({"role": "assistant", "content": response})
 
+
+# Function to display chat interface
+def situation_interface():
+
+    situat = st.text_area("Enter the situation of at least 50 words here:")
+    st.session_state.situation = situat
+
+    if st.button("Save") or st.session_state.situation is not "":
+            # Display chat history
+        for chat in st.session_state.SitRag:
+            if chat["role"] == "user":
+                with st.chat_message("user"):
+                    st.markdown(f"**You:** {chat['content']}")
+            else:
+                with st.chat_message("assistant"):
+                    st.markdown(f"**Assistant:** {chat['content']}")
+
+        # Accept user inputs
+        prompt = st.chat_input("Say something")
+
+        if prompt:
+
+            # Add user message to chat history
+            st.session_state.SitRag.append({"role": "user", "content": prompt})
+
+            # Display user message in chat message container
+            with st.chat_message("user"):
+                st.markdown(f"**You:** {prompt}")
+
+            # Display loading message
+            loading_message_placeholder = st.empty()
+            loading_message_placeholder.markdown("**Loading...**")
+
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+            # Display assistant response in chat message container
+            with st.chat_message("assistant"):
+                response = loop.run_until_complete(situation_input(situat,prompt))
+                st.markdown(f"**LegalAssist:** {response}")
+
+            # Clear loading message and display response
+            loading_message_placeholder.empty()
+            st.session_state.SitRag.append({"role": "assistant", "content": response})
+
+    if st.button("Reset"):   
+        st.session_state.situation = ""
+        st.success("Data reset! Please provide a new scenario on this page.")
+
     # st.write(messages_key)
 
 # Summarisation Page
 def summarisation():
-    st.title("Case Summarisation")
+    st.title("Case Summarization")
     # st.write("Please wait, summarisation in progress...")
 
     # Lazy loading simulation
-    if st.button("Summarise"):
+    if st.button("Summarize"):
         # Display loading message
         loading_message_placeholder = st.empty()
-        loading_message_placeholder.markdown("**Sumarising...**")
+        loading_message_placeholder.markdown("**Sumarizing...**")
 
         # Display assistant response in chat message container
         # with st.chat_message("assistant"):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        response = loop.run_until_complete(getRag("Summarize this Document"))
-        st.write("Summarisation complete!")
+        response = loop.run_until_complete(summarize())
+        # st.write("Summarisation complete!")
         st.text_area("Summary", response, height=700)
         # Clear loading message and display response
         loading_message_placeholder.empty()
-        
+
         # st.write("### Summary :")
         
 
@@ -119,11 +174,13 @@ st.set_page_config(page_title="QA RAG App", layout="wide")
 if  st.session_state.file_text:
     
     st.sidebar.title("Navigation")
-    page = st.sidebar.selectbox("Go to", ["Home", "Summarisation", "QA Chat"])
+    page = st.sidebar.selectbox("Go to", ["Home", "Summarisation", "QA Chat", "Situation Based Chat"])
 
 else:
     # st.session_state.new = False
     page = "Home"
+    st.sidebar.title("Navigation")
+    page = st.sidebar.selectbox("Go to", ["Home", "Situation Based Chat"])
 
 if page == "Home":
     st.title("Welcome to LawGPT")
@@ -178,10 +235,16 @@ elif page == "Summarisation":
     summarisation()
 
 elif page == "QA Chat":
-    st.title("Case RAG")
+    st.title("Case Chat")
     st.session_state.page = "Rag"
     # st.session_state.new = False
     chat_interface()
+
+elif page == "Situation Based Chat":
+    st.title("Situation Based Chat")
+    st.session_state.page = "Situation"
+    # st.session_state.new = False
+    situation_interface()
 
 
     
