@@ -21,7 +21,7 @@ def deleteFaiss():
 async def getRag(text):
     # summarizer = pipeline("summarization")
     # summary = summarizer(text, max_length=130, min_length=30, do_sample=False)
-    return await user_input(text)
+    return await user_input(text, st.session_state.db_path)
 
 async def createEmbedding(file_text):
     res = await generateEmbedding(file_text)
@@ -158,7 +158,7 @@ def summarisation():
         # with st.chat_message("assistant"):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        response = loop.run_until_complete(summarize())
+        response = loop.run_until_complete(summarize(st.session_state.db_path))
         # st.write("Summarisation complete!")
         st.text_area("Summary", response, height=700)
         # Clear loading message and display response

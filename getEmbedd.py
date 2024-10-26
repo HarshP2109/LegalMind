@@ -5,6 +5,7 @@ from langchain.chains.question_answering import load_qa_chain
 import re
 from dotenv import load_dotenv
 import os
+import tempfile
 
 load_dotenv()
 # def load_pdf(file_path):
@@ -61,8 +62,12 @@ async def get_vector_store(text_chunks):
     vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
 
     # Save the vector store locally with the name "faiss_index"
-    vector_store.save_local("faiss_index")
+    # Make Temp folder to store faiss index vector embedding
+    tempdir = tempfile.mkdtemp()
+    vector_store_path = os.path.join(tempdir, "faiss")
+    vector_store.save_local(vector_store_path)
 
+    return vector_store_path
 
 # text = load_pdf(file_path="/content/The Complete Book of Ayurvedic Home Remedies.pdf")
 
@@ -71,6 +76,6 @@ async def generateEmbedding(file_text):
     print("vector Embediing 1")
     text_chunks = split_text(text)
     print("vector Embediing 2")
-    await get_vector_store(text_chunks)
+    location = await get_vector_store(text_chunks)
     print("vector Embediing 3")
-    return "faiss_index"
+    return location

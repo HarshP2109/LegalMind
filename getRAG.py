@@ -37,12 +37,12 @@ async def get_conversational_chain():
 
     return chain
 
-async def user_input(user_question):
+async def user_input(user_question, location):
     # Create embeddings for the user question using a Google Generative AI model
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     # print(1)
     # Load a FAISS vector database from a local file
-    new_db = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
+    new_db = FAISS.load_local(location, embeddings, allow_dangerous_deserialization=True)
     # print(2)
     # Perform similarity search in the vector database based on the user question
     docs = new_db.similarity_search(user_question, k=3)
